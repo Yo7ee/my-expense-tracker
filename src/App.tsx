@@ -1,59 +1,20 @@
-import { useState, useEffect } from "react";
-import {
-	type Transaction,
-	type MonthFilter,
-	MONTH_LABELS,
-	MONTH,
-} from "./types";
+import { type MonthFilter, MONTH_LABELS, MONTH } from "./types";
 import TransactionList from "./component/TransactionList";
 import AddTransaction from "./component/AddTransaction";
 import "./App.css";
+import { useTransactions } from "./hook/useTransactions";
 
 function App() {
-	const [selectedMonth, setSelectedMonth] = useState<MonthFilter>("All");
+	const {
+		selectedMonth,
+		total,
+		filteredTransactions,
+		onAdd,
+		onDelete,
+		onMonthFilter,
+	} = useTransactions();
+
 	const monthList: MonthFilter[] = ["All", ...MONTH];
-	function getLocalStorageTransactions(): Transaction[] {
-		const localStorageTransactions: string | null =
-			localStorage.getItem("transactions");
-		return localStorageTransactions
-			? (JSON.parse(localStorageTransactions) as Transaction[])
-			: [];
-	}
-	const [transactions, setTransactions] = useState<Transaction[]>(() => {
-		return getLocalStorageTransactions();
-	});
-	const onDelete = (id: string) => {
-		setTransactions(
-			transactions.filter((transaction) => transaction.id !== id),
-		);
-	};
-	const onAdd = (newTransaction: Transaction) => {
-		const oldTransactions: Transaction[] = transactions ? transactions : [];
-		const newTransactions = [newTransaction, ...oldTransactions];
-		setTransactions(newTransactions);
-	};
-
-	const onMonthFilter = (month: MonthFilter): void => {
-		setSelectedMonth(month);
-	};
-
-	useEffect(() => {
-		localStorage.setItem("transactions", JSON.stringify(transactions));
-	}, [transactions]);
-
-	const filteredTransactions: Transaction[] =
-		selectedMonth === "All"
-			? transactions
-			: transactions.filter((transaction) =>
-					transaction.date.split("-")[1].includes(selectedMonth),
-				);
-	const total: number = filteredTransactions.reduce(
-		(total: number, transaction: Transaction) => {
-			total = total + transaction.amount;
-			return total;
-		},
-		0,
-	);
 
 	return (
 		<>
