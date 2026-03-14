@@ -3,7 +3,7 @@ import {
 	type Transaction,
 	type PartialTransaction,
 } from "../types";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface Props {
 	items: Transaction[];
@@ -49,6 +49,7 @@ const TransactionEditRow = ({
 	onSave,
 	onCancel,
 }: TransactionEditRowProps) => {
+	const titleRef = useRef<HTMLSelectElement>(null);
 	const [tempData, setTempData] = useState<PartialTransaction>(item);
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -69,12 +70,16 @@ const TransactionEditRow = ({
 		};
 		onSave(id, editTransaction);
 	};
+	useEffect(() => {
+		titleRef.current?.focus();
+	}, []);
 	return (
 		<tr>
 			<td>
 				<select
 					name='category'
 					id='category'
+					ref={titleRef}
 					value={tempData.category}
 					onChange={handleChange}>
 					{CATEGORIES.map((category) => (
