@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { type Transaction, type MonthFilter } from "../types";
+import type { Transaction, MonthFilter, PartialTransaction } from "../types";
 export const useTransactions = () => {
 	const [selectedMonth, setSelectedMonth] = useState<MonthFilter>("All");
 	function getLocalStorageTransactions(): Transaction[] {
@@ -19,6 +19,23 @@ export const useTransactions = () => {
 	};
 	const onAdd = (newTransaction: Transaction) => {
 		setTransactions((prev) => [newTransaction, ...prev]);
+	};
+
+	const onSave = (id: string, change: PartialTransaction) => {
+		setTransactions((prev) =>
+			prev.map((transaction) =>
+				transaction.id === id ? { ...transaction, ...change } : transaction,
+			),
+		);
+		setEditingId(null);
+	};
+	const [editingId, setEditingId] = useState<string | null>(null);
+
+	const onEdit = (id: string): void => {
+		setEditingId(id);
+	};
+	const onCancel = (): void => {
+		setEditingId(null);
 	};
 
 	const onMonthFilter = (month: MonthFilter): void => {
@@ -50,7 +67,11 @@ export const useTransactions = () => {
 		selectedMonth,
 		total,
 		filteredTransactions,
+		editingId,
 		onAdd,
+		onEdit,
+		onSave,
+		onCancel,
 		onDelete,
 		onMonthFilter,
 	};

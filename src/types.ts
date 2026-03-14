@@ -6,6 +6,14 @@ export interface Transaction {
 	date: string;
 }
 
+export interface PartialTransaction {
+	id: string;
+	title?: string;
+	amount?: number;
+	category?: Category;
+	date?: string;
+}
+
 export const CATEGORIES = [
 	"Food",
 	"Transport",

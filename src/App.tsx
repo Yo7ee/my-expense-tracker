@@ -9,7 +9,11 @@ function App() {
 		selectedMonth,
 		total,
 		filteredTransactions,
+		editingId,
 		onAdd,
+		onEdit,
+		onSave,
+		onCancel,
 		onDelete,
 		onMonthFilter,
 	} = useTransactions();
@@ -34,7 +38,14 @@ function App() {
 						Month: {MONTH_LABELS[selectedMonth]}, Total amount: {total}
 					</p>
 				</div>
-				<TransactionList items={filteredTransactions} onDelete={onDelete} />
+				<TransactionList
+					items={filteredTransactions}
+					editingId={editingId}
+					onEdit={onEdit}
+					onSave={onSave}
+					onCancel={onCancel}
+					onDelete={onDelete}
+				/>
 				<AddTransaction onAdd={onAdd} />
 			</section>
 		</>
