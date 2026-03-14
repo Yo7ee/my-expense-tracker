@@ -35,10 +35,12 @@ const AddTransaction = ({ onAdd }: Props) => {
 
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		const parsedAmount = Number(form.amount);
+		const finalAmount = isNaN(parsedAmount) ? 0 : parsedAmount;
 		const newTransaction: Transaction = {
 			...form,
 			id: Math.random().toString(36).substr(2, 9),
-			amount: Number(form.amount),
+			amount: finalAmount,
 		};
 		onAdd(newTransaction);
 		setForm(JSON.parse(JSON.stringify(defaultForm)));
@@ -46,6 +48,20 @@ const AddTransaction = ({ onAdd }: Props) => {
 
 	return (
 		<form onSubmit={onSubmit}>
+			<div>
+				<label htmlFor='category'>Category:</label>
+				<select
+					name='category'
+					id='category'
+					value={form.category}
+					onChange={handleChange}>
+					{CATEGORIES.map((category) => (
+						<option key={category} value={category}>
+							{category}
+						</option>
+					))}
+				</select>
+			</div>
 			<div>
 				<label htmlFor='title'>Title:</label>
 				<input
@@ -66,20 +82,7 @@ const AddTransaction = ({ onAdd }: Props) => {
 					onChange={handleChange}
 				/>
 			</div>
-			<div>
-				<label htmlFor='category'>Category:</label>
-				<select
-					name='category'
-					id='category'
-					value={form.category}
-					onChange={handleChange}>
-					{CATEGORIES.map((category) => (
-						<option key={category} value={category}>
-							{category}
-						</option>
-					))}
-				</select>
-			</div>
+
 			<div>
 				<label htmlFor='date'>Date:</label>
 				<input
