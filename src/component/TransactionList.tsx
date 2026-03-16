@@ -125,46 +125,41 @@ const TransactionEditRow = ({
 	);
 };
 
-const TransactionList = ({
-	items,
-	editingId,
-	onSave,
-	onCancel,
-	onEdit,
-	onDelete,
-}: Props) => {
-	return items.length === 0 ? (
-		<div>There is no transaction.</div>
-	) : (
-		<table>
-			<thead>
-				<tr>
-					<th>Category</th>
-					<th>Title</th>
-					<th>Amount</th>
-					<th>Date</th>
-				</tr>
-			</thead>
-			<tbody>
-				{items.map((item) =>
-					editingId === item.id ? (
-						<TransactionEditRow
-							key={item.id}
-							item={item}
-							onSave={onSave}
-							onCancel={onCancel}
-						/>
-					) : (
-						<TransactionViewRow
-							key={item.id}
-							item={item}
-							onEdit={onEdit}
-							onDelete={onDelete}
-						/>
-					),
-				)}
-			</tbody>
-		</table>
-	);
-};
+const TransactionList = React.memo(
+	({ items, editingId, onSave, onCancel, onEdit, onDelete }: Props) => {
+		return items.length === 0 ? (
+			<div>There is no transaction.</div>
+		) : (
+			<table>
+				<thead>
+					<tr>
+						<th>Category</th>
+						<th>Title</th>
+						<th>Amount</th>
+						<th>Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					{items.map((item) =>
+						editingId === item.id ? (
+							<TransactionEditRow
+								key={item.id}
+								item={item}
+								onSave={onSave}
+								onCancel={onCancel}
+							/>
+						) : (
+							<TransactionViewRow
+								key={item.id}
+								item={item}
+								onEdit={onEdit}
+								onDelete={onDelete}
+							/>
+						),
+					)}
+				</tbody>
+			</table>
+		);
+	},
+);
 export default TransactionList;

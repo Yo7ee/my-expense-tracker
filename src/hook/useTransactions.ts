@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import type { Transaction, MonthFilter, PartialTransaction } from "../types";
 export const useTransactions = () => {
 	const [selectedMonth, setSelectedMonth] = useState<MonthFilter>("All");
@@ -12,31 +12,31 @@ export const useTransactions = () => {
 	const [transactions, setTransactions] = useState<Transaction[]>(() => {
 		return getLocalStorageTransactions();
 	});
-	const onDelete = (id: string) => {
+	const onDelete = useCallback((id: string) => {
 		setTransactions((prev) =>
 			prev.filter((transaction) => transaction.id !== id),
 		);
-	};
-	const onAdd = (newTransaction: Transaction) => {
+	}, []);
+	const onAdd = useCallback((newTransaction: Transaction) => {
 		setTransactions((prev) => [newTransaction, ...prev]);
-	};
+	}, []);
 
-	const onSave = (id: string, change: PartialTransaction) => {
+	const [editingId, setEditingId] = useState<string | null>(null);
+	const onSave = useCallback((id: string, change: PartialTransaction) => {
 		setTransactions((prev) =>
 			prev.map((transaction) =>
 				transaction.id === id ? { ...transaction, ...change } : transaction,
 			),
 		);
 		setEditingId(null);
-	};
-	const [editingId, setEditingId] = useState<string | null>(null);
+	}, []);
 
-	const onEdit = (id: string): void => {
+	const onEdit = useCallback((id: string): void => {
 		setEditingId(id);
-	};
-	const onCancel = (): void => {
+	}, []);
+	const onCancel = useCallback((): void => {
 		setEditingId(null);
-	};
+	}, []);
 
 	const onMonthFilter = (month: MonthFilter): void => {
 		setSelectedMonth(month);
