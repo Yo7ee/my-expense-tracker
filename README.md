@@ -1,73 +1,133 @@
-# React + TypeScript + Vite
+## React + TypeScript Expense Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is intended to refresh my memory of React and learn TypeScript.
 
-Currently, two official plugins are available:
+I found that using TypeScript encourages a more rigorous approach to parameter creation and passing. This deliberate consideration of types during development helps prevent bugs that might otherwise arise from JavaScript's dynamic typing.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Although my work environment uses Vue, I am using this project to demonstrate my cross-framework abilities.
 
-## React Compiler
+## Core Learning Targets
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### TypeScript
 
-## Expanding the ESLint configuration
+- Define type and interface: Define the `Transaction` interface to ensure data consistency from the mock API (localStorage) to the UI.
+- Union type:
+- Generics: Implement a generic API request utility to improve code reusability.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### React
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Performance Optimization:
+  1. useMemo
+  2. useCallback & React.memo: This is for a demo, since the render time is not that bad.
+     - Triggered by dark mode
+     - Result: Measured with React DevTools Profiler, the optimized render time was reduced from 8.7ms to 7.3ms (with a basic amount of data).
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### React vs Vue
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. State & Computed
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+   ```javascript
+   // React: Manually manage dependencies
+   const [count, setCount] = useState(0);
+   const doubled = useMemo(() => count * 2, [count]);
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+   // Vue: Automatically tracks dependencies
+   const count = ref(0);
+   const doubled = computed(() => count.value * 2);
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. Emits vs. Callbacks
+   - React callback function
+
+   ```jsx
+   // Parent Component
+   const Parent = () => {
+   const handleUpdate = (val: string) => console.log(val);
+   return <Child onUpdate={handleUpdate} />;
+   };
+
+   // Child Component
+   interface Props {
+   onUpdate: (val: string) => void;
+   }
+
+   const Child = ({ onUpdate }: Props) => {
+   return <button onClick={() => onUpdate("Hello!")}>Update</button>;
+   };
+   ```
+
+   - Vue defineEmits
+
+   ```html
+   <!-- Parent Component -->
+   <template>
+   	<Child @update="handleUpdate" />
+   </template>
+
+   <script setup>
+   	const handleUpdate = (val) => console.log(val);
+   </script>
+   ```
+
+   ```html
+   <!-- Child Component -->
+   <template>
+   	<button @click="emit('update', 'Hello!')">Update</button>
+   </template>
+
+   <script setup>
+   	const emit = defineEmits(["update"]);
+   </script>
+   ```
+
+3. Lifecycle & Effects
+
+   ```javascript
+   // React: Control execution timing with the second argument `[]`
+   useEffect(() => {
+   	// Mounted logic
+   	return () => {
+   		/* Unmounted logic */
+   	};
+   }, []);
+   ```
+
+   ```javascript
+   // Vue: Explicit lifecycle hooks
+   onMounted(() => {
+   	/* Mounted logic */
+   });
+   onUnmounted(() => {
+   	/* Unmounted logic */
+   });
+   ```
+
+4. Watchers
+
+   ```javascript
+   // React: Listen for specific state changes
+   useEffect(() => {
+   	console.log("Count changed:", count);
+   }, [count]);
+   ```
+
+   ```js
+   // Vue: Dedicated watch function
+   watch(count, (newVal) => {
+   	console.log("Count changed:", newVal);
+   });
+   ```
+
+5. Global State
+
+   ```javascript
+   // React (Redux/Zustand): Explicitly select state
+   const user = useSelector((state) => state.user);
+   const name = user.name;
+   ```
+
+   ```js
+   // Vue (Pinia): Directly destructure or use
+   const userStore = useUserStore();
+   const { name } = storeToRefs(userStore);
+   ```
